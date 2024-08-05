@@ -5,10 +5,13 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd
+from helpers import apology, login_required, lookup, usd, search
 
 # Configure application
 app = Flask(__name__)
+
+#Define google books api key
+GOOGLE_BOOKS_API_KEY = "AIzaSyBhiLmrNzOyI1qLN31CINB3N-JRD6l6MQo"
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -154,6 +157,15 @@ def quote():
     """Get stock quote."""
     return apology("TODO")
 
+@app.route("/search", methods=["GET", "POST"])
+@login_required
+def search():
+    """Search for the name of the book"""
+    query = request.args.get('q')
+    if query:
+        search_results = search(query, GOOGLE_BOOKS_API_KEY)
+        return render_template("search_results.html", search_results=search_results)
+    return render_template("search.html")
 
 
 

@@ -82,6 +82,26 @@ def lookup(symbol):
     except (KeyError, IndexError, requests.RequestException, ValueError):
         return None
 
+def search(query, api_key):
+    """Look up books by query using Google Books API."""
+
+    # Prepare API request
+    url = f"https://www.googleapis.com/books/v1/volumes"
+    params = {
+        'q': query,
+        'key': api_key,
+        'maxResults': 10  # This value can be customized as needed
+    }
+
+    # Query API
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return data.get('items', [])
+    except (requests.RequestException, ValueError) as e:
+        print(f"Error: {e}")
+        return None
 
 def usd(value):
     """Format value as USD."""
