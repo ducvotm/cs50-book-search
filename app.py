@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -159,12 +159,18 @@ def quote():
 
 @app.route("/search", methods=["GET", "POST"])
 @login_required
-def search():
-    """Search for the name of the book"""
-    query = request.args.get('q')
-    if query:
-        search_results = search(query, GOOGLE_BOOKS_API_KEY)
-        return render_template("search_results.html", search_results=search_results)
+def search_books():
+    if request.method == "POST":
+        data = request.form
+        print(f"Received data: {data}")
+        query = data.get('q')
+        if query:
+            search_results = search(query, GOOGLE_BOOKS_API_KEY)
+            if search_results is not None:
+                print(f"Search results: {search_results}")
+                return render_template("search_results.html", search_results=search_results)
+            return jsonify({"error": "Error fetching search results"}), 500
+        return jsonify({"error": "No query provided"}), 400
     return render_template("search.html")
 
 

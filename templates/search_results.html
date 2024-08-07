@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search Results
+{% endblock %}
+
+{% block main %}
+    <form action="/search" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="q" placeholder="Search for a book: " type="text" required>
+        </div>
+        
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    {% if search_results %}
+    <ul class="list-group mt-3">
+        {% for book in search_results %}
+            <li class="list-group-item">
+                <h2>{{ book.volumeInfo.title }}</h2>
+                <p>Author: {{ book.volumeInfo.authors | join(", ") }}</p>
+                <p>Description: {{ book.volumeInfo.description }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p class="mt-3">No results found.</p>
+    {% endif %}
+{% endblock %}

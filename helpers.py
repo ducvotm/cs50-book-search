@@ -98,10 +98,12 @@ def search(query, api_key):
         response = requests.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        return data.get('items', [])
+        return data.get("items", [])
     except (requests.RequestException, ValueError) as e:
         print(f"Error: {e}")
         return None
+
+
 
 def usd(value):
     """Format value as USD."""
