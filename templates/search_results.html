@@ -17,13 +17,36 @@
     <ul class="list-group mt-3">
         {% for book in search_results %}
             <li class="list-group-item">
+                
+                {% if book.volumeInfo.imageLinks %}
+                <img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover" style="float: left; margin-right: 10px;">
+                {% else %}
+                <img src="/static/default_cover.jpg" alt="Default cover" style="float: left; margin-right: 10px;">
+                {% endif %}
+
                 <h2>{{ book.volumeInfo.title }}</h2>
+
                 <p>Author: {{ book.volumeInfo.authors | join(", ") }}</p>
-                <p>Description: {{ book.volumeInfo.description }}</p>
+
+                {% if book.volumeInfo.description %}
+                    Description: 
+                    <span class="short-desc">{{ book.volumeInfo.description[:200] }}{% if book.volumeInfo.description|length > 200 %}...{% endif %}</span>
+                    {% if book.volumeInfo.description|length > 200 %}
+                        <span class="full-desc" style="display: none;">{{ book.volumeInfo.description }}</span>
+                        <a href="javascript:void(0);" class="read-more-link" onclick="toggleDescription(this)">Read more</a>
+                    {% endif %}
+                {% else %}
+                    <p>Description: Not available</p>
+                {% endif %}
+                
             </li>
         {% endfor %}
     </ul>
     {% else %}
         <p class="mt-3">No results found.</p>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock %}

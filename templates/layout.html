@@ -18,7 +18,7 @@
 
         <title>C$50 Finance: {% block title %}{% endblock %}</title>
 
-    </head>
+    </head> 
 
     <body>
 
@@ -84,7 +84,12 @@
                     document.querySelector('form[action="https://validator.w3.org/check"] > input[name="fragment"]').value = html;
                 });
             </script>
+
         </footer>
+        
+        {% block scripts %}
+        <!-- Additional scripts can be added here by child templates -->
+        {% endblock %}
 
     </body>
 
