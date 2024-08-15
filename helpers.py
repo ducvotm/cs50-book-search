@@ -81,29 +81,78 @@ def lookup(symbol):
         return {"price": price, "symbol": symbol}
     except (KeyError, IndexError, requests.RequestException, ValueError):
         return None
+    
+#Define google books api key
+GOOGLE_BOOKS_API_KEY = "AIzaSyBhiLmrNzOyI1qLN31CINB3N-JRD6l6MQo"
 
-def search(query, api_key):
+GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes"
+
+def search(query, max_results = 10):
     """Look up books by query using Google Books API."""
 
     # Prepare API request
-    url = f"https://www.googleapis.com/books/v1/volumes"
     params = {
-        'q': query,
-        'key': api_key,
-        'maxResults': 10  # This value can be customized as needed
+        "q": query,
+        "key": GOOGLE_BOOKS_API_KEY,
+        "maxResults": max_results  # This value can be customized as needed
     }
 
     # Query API
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(GOOGLE_BOOKS_API_URL, params=params)
         response.raise_for_status()
         data = response.json()
         return data.get("items", [])
     except (requests.RequestException, ValueError) as e:
         print(f"Error: {e}")
         return None
+    
+def filter(genre=None, author=None, published_year=None, max_results=10):
+    """Filter books by genre, author, and published year using Google Books API."""
 
+    # Construct the query string based on the provided filters
+    query_parts = []
+    if genre:
+        query_parts.append(f"subject:{genre}")
+    if author:
+        query_parts.append(f"inauthor:{author}")
+    if published_year:
+        query_parts.append(f"inpublisher:{published_year}")
+    query = " ".join(query_parts).strip()
 
+    # Prepare API request
+    params = {
+        "q": query,
+        "printType": "books",
+        "maxResults": max_results,
+        "key": GOOGLE_BOOKS_API_KEY
+    }
+
+    # Query API
+    try:
+        response = requests.get(GOOGLE_BOOKS_API_URL, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return extract_books(data)
+    except (requests.RequestException, ValueError) as e:
+        print(f"Error: {e}")
+        return []
+
+def extract_books(data):
+    """Extract book information from API response."""
+    if "items" not in data:
+        return []
+
+    return [
+        {
+            "title": item["volumeInfo"].get("title"),
+            "authors": item["volumeInfo"].get("authors"),
+            "publishedDate": item["volumeInfo"].get("publishedDate"),
+            "description": item["volumeInfo"].get("description"),
+            "categories": item["volumeInfo"].get("categories"),
+            "thumbnail": item["volumeInfo"].get("imageLinks", {}).get("thumbnail")
+        } for item in data["items"]
+    ]
 
 def usd(value):
     """Format value as USD."""

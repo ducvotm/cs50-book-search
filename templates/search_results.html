@@ -19,9 +19,9 @@
             <li class="list-group-item">
                 
                 {% if book.volumeInfo.imageLinks %}
-                <img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover" style="float: left; margin-right: 10px;">
+                    <img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover" style="float: left; margin-right: 10px;">
                 {% else %}
-                <img src="/static/default_cover.jpg" alt="Default cover" style="float: left; margin-right: 10px;">
+                <img src="/static/default_cover.jpg" alt="Default cover" style="float: left; margin-right: 10px; width: 100px; height: auto; object-fit: contain;">
                 {% endif %}
 
                 <h2>{{ book.volumeInfo.title }}</h2>

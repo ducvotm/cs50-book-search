@@ -5,13 +5,10 @@ from flask import Flask, flash, redirect, render_template, request, session, jso
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd, search
+from helpers import apology, login_required, lookup, usd, search, filter
 
 # Configure application
 app = Flask(__name__)
-
-#Define google books api key
-GOOGLE_BOOKS_API_KEY = "AIzaSyBhiLmrNzOyI1qLN31CINB3N-JRD6l6MQo"
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -22,8 +19,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///user.db")
-
+user_db = SQL("sqlite:///user.db")
+book_db = SQL("sqlite:///book.db")
 
 @app.after_request
 def after_request(response):
@@ -63,14 +60,14 @@ def register():
             return apology("the confirmation is not match", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        rows = user_db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
         # Ensure username is not exists
         if len(rows) >= 1:
             return apology("username already exists", 403)
         
         #Insert the new user into users
-        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", request.form.get("username"), generate_password_hash(request.form.get("password")))
+        user_db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", request.form.get("username"), generate_password_hash(request.form.get("password")))
         
         # Query database for username login
         #rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username")) ????????
@@ -119,7 +116,7 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute(
+        rows = user_db.execute(
             "SELECT * FROM users WHERE username = ?", request.form.get("username")
         )
 
@@ -163,17 +160,44 @@ def search_books():
     if request.method == "POST":
         data = request.form
         print(f"Received data: {data}")
-        query = data.get('q')
+        query = data.get("q")
+
         if query:
-            search_results = search(query, GOOGLE_BOOKS_API_KEY)
+            search_results = search(query)
+
             if search_results is not None:
                 print(f"Search results: {search_results}")
                 return render_template("search_results.html", search_results=search_results)
+            
             return jsonify({"error": "Error fetching search results"}), 500
+        
         return jsonify({"error": "No query provided"}), 400
+    
     return render_template("search.html")
 
-
+@app.route("/filter", methods=["GET", "POST"])
+def filter_books():
+    if request.method == "POST":
+        data = request.form
+        print(f"Received data: {data}")
+        
+        # Extract filter criteria from the form data
+        title = data.get("title")
+        author = data.get("author")
+        genre = data.get("genre")
+        year = data.get("year")
+        
+        # Perform the filtering using the `filter` function
+        books = filter(genre=genre, author=author, published_year=year)
+        
+        # Render the HTML template with the filtered results
+        if books:
+            print(f"Filtered books: {books}")
+            return render_template("filter_results.html", books=books)
+        return jsonify({"error": "No books found matching the criteria"}), 404
+    
+    # For GET request, just render the filter form
+    return render_template("filter.html")
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required

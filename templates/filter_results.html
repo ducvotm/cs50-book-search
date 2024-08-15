@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Filtered Books
+{% endblock %}
+
+{% block main %}
+    <form action="/filter" method="post" class="d-flex justify-content-center">
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="author" placeholder="Filter by author" type="text">
+        </div>
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="genre" placeholder="Filter by genre" type="text">
+        </div>
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="year" placeholder="Filter by year" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </form>
+
+    {% if books %}
+    <ul class="list-group mt-3">
+        {% for book in books %}
+            <li class="list-group-item">
+                {% if book.thumbnail %}
+                    <img src="{{ book.thumbnail }}" alt="Book cover" style="float: left; margin-right: 10px;">
+                {% else %}
+                    <img src="/static/default_cover.jpg" alt="Default cover" style="float: left; margin-right: 10px; width: 100px; height: auto; object-fit: contain;">
+                {% endif %}
+                
+                <h2>{{ book.title }}</h2>
+                
+                <p><strong>Authors:</strong> {{ book.authors | join(", ") }}</p>
+                <p><strong>Published Date:</strong> {{ book.publishedDate }}</p>
+                <p><strong>Categories:</strong> {{ book.categories  | join(", ") }}</p>
+
+                {% if book.description %}
+                    <p><strong>Description:</strong> 
+                        <span class="short-desc">{{ book.description[:200] }}{% if book.description|length > 200 %}...{% endif %}</span>
+                        {% if book.description|length > 200 %}
+                            <span class="full-desc" style="display: none;">{{ book.description }}</span>
+                            <a href="javascript:void(0);" class="read-more-link" onclick="toggleDescription(this)">Read more</a>
+                        {% endif %}
+                    </p>
+                {% else %}
+                    <p><strong>Description:</strong> Not available</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p class="text-center mt-3">    No books found matching your criteria.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

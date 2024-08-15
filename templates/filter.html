@@ -1,20 +1,19 @@
+{% extends "layout.html" %}
+
 {% block title %}
     Filter Books
 {% endblock %}
 
 {% block main %}
-    <form action="/filter" method="get">
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" name="title" placeholder="Title" type="text">
+    <form action="/filter" method="post" class="d-flex justify-content-center">
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="author" placeholder="Filter by author" type="text">
         </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" name="author" placeholder="Author" type="text">
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="genre" placeholder="Filter by genre" type="text">
         </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" name="genre" placeholder="Genre" type="text">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" name="year" placeholder="Year" type="text">
+        <div class="mb-3 me-2">
+            <input autocomplete="off" class="form-control" name="year" placeholder="Filter by year" type="text">
         </div>
         <button class="btn btn-primary" type="submit">Filter</button>
     </form>
