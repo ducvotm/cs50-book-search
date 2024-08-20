@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    User Profile
+{% endblock %}
+
+{% block main %}
+    <div id="profile">
+        <h1>{{ username }}</h1>
+        <p>Email: {{ email }}</p>
+        <img src="{{ profile_picture_url }}" alt="Profile Picture">
+    </div>
+    <div id="activity">
+        <h2>Recent Activity</h2>
+        <ul>
+            {% for activity in activities %}
+                <li>{{ activity }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

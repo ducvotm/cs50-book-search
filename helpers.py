@@ -8,6 +8,10 @@ import uuid
 from flask import redirect, render_template, request, session
 from functools import wraps
 
+#Define google books api key
+GOOGLE_BOOKS_API_KEY = "AIzaSyBhiLmrNzOyI1qLN31CINB3N-JRD6l6MQo"
+
+GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes"
 
 def apology(message, code=400):
     """Render message as an apology to user."""
@@ -82,11 +86,6 @@ def lookup(symbol):
     except (KeyError, IndexError, requests.RequestException, ValueError):
         return None
     
-#Define google books api key
-GOOGLE_BOOKS_API_KEY = "AIzaSyBhiLmrNzOyI1qLN31CINB3N-JRD6l6MQo"
-
-GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes"
-
 def search(query, max_results = 10):
     """Look up books by query using Google Books API."""
 
