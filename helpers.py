@@ -37,7 +37,6 @@ def apology(message, code=400):
 
     return render_template("apology.html", top=code, bottom=escape(message)), code
 
-
 def login_required(f):
     """
     Decorate routes to require login.
@@ -52,7 +51,6 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
-
 
 def lookup(symbol):
     """Look up quote for symbol."""
@@ -156,3 +154,4 @@ def extract_books(data):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+

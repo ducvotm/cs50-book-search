@@ -199,8 +199,18 @@ def filter_books():
     # For GET request, just render the filter form
     return render_template("filter.html")
 
-@app.route("/sell", methods=["GET", "POST"])
+@app.route("/profile")
 @login_required
-def sell():
-    """Sell shares of stock"""
-    return apology("TODO")
+def profile():
+    user_id = session.get("user_id")
+    
+    if not user_id:
+        return redirect("/login")   
+
+    
+    # Handle GET request logic here
+    user = user_db.execute("SELECT username FROM users WHERE id = ?", user_id)
+    posts = user_db.execute("SELECT content FROM posts WHERE user_id = ?", user_id)
+    comments = user_db.execute("SELECT content FROM comments WHERE user_id = ?", user_id)
+    
+    return render_template("profile.html", user=user[0], posts=posts, comments=comments)
