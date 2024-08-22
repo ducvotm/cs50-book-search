@@ -213,4 +213,26 @@ def profile():
     posts = user_db.execute("SELECT content FROM posts WHERE user_id = ?", user_id)
     comments = user_db.execute("SELECT content FROM comments WHERE user_id = ?", user_id)
     
-    return render_template("profile.html", user=user[0], posts=posts, comments=comments)
+    return render_template("profile.html", user=user, posts=posts, comments=comments)
+
+@app.route("/review", methods=["GET", "POST"])
+@login_required
+def review():
+    if request.method == "POST":
+        data = request.form
+        book_id = data.get("book_id")
+        rating = data.get("rating")
+        review = data.get("review")
+        
+        # Validate the input
+        if not book_id or not rating or not review:
+            return jsonify({"error": "All fields are required"}), 400
+        
+        # Insert the review into the database
+        user_db.execute("INSERT INTO reviews (user_id, book_id, rating, review) VALUES (?, ?, ?, ?)",
+                        session["user_id"], book_id, rating, review)
+        user_db.commit()
+        
+        return redirect("search.html")
+    
+    return render_template("review.html")
