@@ -13,3 +13,9 @@ function toggleDescription(link) {
     }
 }
 
+function toggleReviewForm(bookId) {
+    var form = document.getElementById('reviewForm-' + bookId);
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+
+
