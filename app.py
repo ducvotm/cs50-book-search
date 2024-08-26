@@ -162,15 +162,13 @@ def quote():
 def search_books():
     if request.method == "POST":
         data = request.form
-        print(f"Received data: {data}")
         query = data.get('q')
+        
         if query:
             search_results = search(query, GOOGLE_BOOKS_API_KEY)
             if search_results is not None:
-                print(f"Search results: {search_results}")
                 return render_template("search_results.html", search_results=search_results)
-            return jsonify({"error": "Error fetching search results"}), 500
-        return jsonify({"error": "No query provided"}), 400
+
     return render_template("search.html")
 
 

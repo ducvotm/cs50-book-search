@@ -88,10 +88,20 @@ def search(query, api_key):
     # Prepare API request
     url = f"https://www.googleapis.com/books/v1/volumes"
     params = {
-        'q': query,
-        'key': api_key,
-        'maxResults': 10  # This value can be customized as needed
+        "q": query,
+        "key": api_key,
+        "maxResults": 5 # This value can be customized as needed
     }
+
+    # Determine the type of query
+    if query.isdigit():
+        params['q'] = f'isbn:{query}'
+    elif 'author:' in query.lower():
+        author_name = query.split(':')[1].strip()
+        params['q'] = f'inauthor:{author_name}'
+    else:
+        params['q'] = query
+    
 
     # Query API
     try:

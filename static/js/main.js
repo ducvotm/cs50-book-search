@@ -13,3 +13,6 @@ function toggleDescription(link) {
     }
 }
 
+function showReviewForm(bookId) {
+    window.location.href = `/review/${bookId}`;
+}

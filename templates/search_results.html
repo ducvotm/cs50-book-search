@@ -25,6 +25,7 @@
                 {% endif %}
 
                 <h2>{{ book.volumeInfo.title }}</h2>
+                <button class="btn btn-secondary" onclick="showReviewForm('{{ book.id }}')">Rate and Review</button>
 
                 <p>Author: {{ book.volumeInfo.authors | join(", ") }}</p>
 
