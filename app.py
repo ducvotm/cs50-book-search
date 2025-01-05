@@ -5,13 +5,10 @@ from flask import Flask, flash, redirect, render_template, request, session, jso
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd, search, filter
+from helpers import apology, login_required, search
 
 # Configure application
 app = Flask(__name__)
-
-# Custom filter
-app.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -20,7 +17,6 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 user_db = SQL("sqlite:///user.db")
-book_db = SQL("sqlite:///book.db")
 
 @app.after_request
 def after_request(response):
@@ -35,7 +31,7 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    return redirect("/search")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -82,20 +78,6 @@ def register():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html") 
-
-
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-    """Buy shares of stock"""
-    return apology("TODO")
-
-
-@app.route("/history")
-@login_required
-def history():
-    """Show history of transactions"""
-    return apology("TODO")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -148,12 +130,6 @@ def logout():
     return redirect("/")
 
 
-@app.route("/quote", methods=["GET", "POST"])
-@login_required
-def quote():
-    """Get stock quote."""
-    return apology("TODO")
-
 @app.route("/search", methods=["GET", "POST"])
 @login_required
 def search_books():
@@ -175,42 +151,3 @@ def search_books():
     
     return render_template("search.html")
 
-@app.route("/filter", methods=["GET", "POST"])
-def filter_books():
-    if request.method == "POST":
-        data = request.form
-        print(f"Received data: {data}")
-        
-        # Extract filter criteria from the form data
-        title = data.get("title")
-        author = data.get("author")
-        genre = data.get("genre")
-        year = data.get("year")
-        
-        # Perform the filtering using the `filter` function
-        books = filter(genre=genre, author=author, published_year=year)
-        
-        # Render the HTML template with the filtered results
-        if books:
-            print(f"Filtered books: {books}")
-            return render_template("filter_results.html", books=books)
-        return jsonify({"error": "No books found matching the criteria"}), 404
-    
-    # For GET request, just render the filter form
-    return render_template("filter.html")
-
-@app.route("/profile")
-@login_required
-def profile():
-    user_id = session.get("user_id")
-    
-    if not user_id:
-        return redirect("/login")   
-
-    
-    # Handle GET request logic here
-    user = user_db.execute("SELECT username FROM users WHERE id = ?", user_id)
-    posts = user_db.execute("SELECT content FROM posts WHERE user_id = ?", user_id)
-    comments = user_db.execute("SELECT content FROM comments WHERE user_id = ?", user_id)
-    
-    return render_template("profile.html", user=user[0], posts=posts, comments=comments)
